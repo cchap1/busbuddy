@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "364546436911",
+    "firebase_url": "https://bus-buddy-4789c.firebaseio.com",
+    "project_id": "bus-buddy-4789c",
+    "storage_bucket": "bus-buddy-4789c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:364546436911:android:aa7d36b434497139",
+        "android_client_info": {
+          "package_name": "cs371m.csc2726.busbuddy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "364546436911-uars0gqdo08uv1pf226alb6kt4v8ta34.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "cs371m.csc2726.busbuddy",
+            "certificate_hash": "5d07339254ecc239e40c8c2c77ee517f6de1134f"
+          }
+        },
+        {
+          "client_id": "364546436911-k4oh4hefioj8umn3m239df85ch856l1b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDaz79gYJQumLq5cPquvtdnfCDfQc9BXj8"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "364546436911-k4oh4hefioj8umn3m239df85ch856l1b.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
