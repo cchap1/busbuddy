@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="kids">
+        <item>Johnny Appleseed</item>
+        <item>Suzie Smith</item>
+        <item>Chad Chapman</item>
+        <item>Bobby Flay</item>
+        <item>Kanye West</item>
+        <item>Justin Bieber</item>
+        <item>Roger Rogers</item>
+        <item>Mike Wazowski</item>
+        <item>Kaylin Maxwell</item>
+        <item>Little Timmy</item>
+    </string-array>
+</resources>

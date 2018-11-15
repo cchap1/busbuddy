@@ -11,35 +11,29 @@ import android.widget.TextView;
 
 import java.util.Random;
 
-/**
- * Created by witchel on 1/29/18.
- */
 
 public class ColorAdapter extends RecyclerView.Adapter<ColorAdapter.ViewHolder>{
-    private ColorDict.ColorName[] colorDict;
+    private String[] kids;
     private Context mContext;
     private Random random;
+    private String[] kidNames;
 
 
     public ColorAdapter(Context context){
-        colorDict = ColorDict.dict;
         mContext = context;
         random = new Random();
+        kidNames = mContext.getResources().getStringArray(R.array.kids);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder{
-        // XXX This ViewHolder class is built in to the RecyclerView.
-        //   Put what you want in it, then initialize them in the constructor
-        //   Set an onclicklistener on the view to swapItem with the clicked position
         TextView rowText;
 
         public ViewHolder(View view) {
             super(view);
-            rowText = (TextView) view.findViewById(R.id.tv);
+            rowText = (TextView) view.findViewById(R.id.kidText);
             rowText.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    swapItem(getAdapterPosition());
                 }
             });
         }
@@ -48,7 +42,7 @@ public class ColorAdapter extends RecyclerView.Adapter<ColorAdapter.ViewHolder>{
     @Override
     public ColorAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
         // Create a new View
-        View v = LayoutInflater.from(mContext).inflate(R.layout.color_card,parent,false);
+        View v = LayoutInflater.from(mContext).inflate(R.layout.row,parent,false);
         ViewHolder vh = new ViewHolder(v);
         return vh;
     }
@@ -65,13 +59,14 @@ public class ColorAdapter extends RecyclerView.Adapter<ColorAdapter.ViewHolder>{
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position){
-        float luminance = getLuminance(colorDict[position].color);
+        int color = Color.GREEN;
+        float luminance = getLuminance(color);
         // Print the color name and the luminance, which is just interesting
-        String display = colorDict[position].name + " " + String.format("%1.2f", luminance);
+        String display = kidNames[position];
         // XXX Do something with the ViewHolder object
         //   If the luminance is less than 0.3, use white to write the name, otherwise black
         holder.rowText.setText(display);
-        holder.rowText.setBackgroundColor(colorDict[position].color);
+        holder.rowText.setBackgroundColor(color);
         if (luminance < .3)
             holder.rowText.setTextColor(Color.WHITE);
         else
@@ -80,12 +75,14 @@ public class ColorAdapter extends RecyclerView.Adapter<ColorAdapter.ViewHolder>{
 
     @Override
     public int getItemCount(){
-        return colorDict.length;
+        return kidNames.length;
     }
 
-    public void swapItem(int position) {
-        int swappedPosition = ColorDict.randomSwap(random, position);
-        notifyItemChanged(position);
-        notifyItemChanged(swappedPosition);
-    }
+    /*public void moveToTop(int position) {
+        ColorDict.ColorName colorName = getItem(position);
+        remove(colorName);
+        insert(colorName, 0);
+        notifyDataSetChanged();
+    }*/
+
 }

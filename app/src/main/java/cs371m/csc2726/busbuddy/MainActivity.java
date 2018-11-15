@@ -5,7 +5,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -15,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,6 +24,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -32,7 +33,6 @@ public class MainActivity extends AppCompatActivity
 
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
-    private android.support.v7.widget.RecyclerView recyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,16 +41,22 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        ColorDict.shuffleArray();
-        final RecyclerViewer rv = new RecyclerViewer();
-
-        initRecyclerView();
+        /*ListView kidList = (ListView) findViewById(R.id.theListView);
+        String[] kidNames = getResources().getStringArray(R.array.kids);
+        ArrayList arrayList = new ArrayList<>(Arrays.asList(kidNames));
+        ArrayAdapter adapter=new ArrayAdapter<String>(this, R.layout.row, R.id.text, arrayList);
+        kidList.setAdapter(adapter);*/
 
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
 
         if (currentUser == null)
             loginFunc();
+
+
+        initRecyclerView();
+
+
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -129,9 +135,9 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.bus_location) {
             // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        } else if (id == R.id.students) {
 
-        } else if (id == R.id.nav_slideshow) {
+        } else if (id == R.id.add_student) {
 
         } else if (id == R.id.nav_manage) {
 
@@ -148,27 +154,30 @@ public class MainActivity extends AppCompatActivity
 
     public void updateUser() {
 
-        Toast.makeText(this, "In updateUser", Toast.LENGTH_SHORT).show();
-       // String user = mAuth.getCurrentUser().toString();
-       // TextView userName = findViewById(R.id.userName);
-       // userName.setText("" + user);
-       // TextView userEmail = findViewById(R.id.userEmail);
-       // userEmail.setText("" + userEmail);
+        /*Toast.makeText(this, "In updateUser", Toast.LENGTH_SHORT).show();
+        String user = mAuth.getCurrentUser().toString();
+        TextView userName = findViewById(R.id.userName);
+        userName.setText("" + user);
+        TextView userEmail = findViewById(R.id.userEmail);
+        userEmail.setText("" + userEmail);*/
     }
 
-    public void initRecyclerView () {
+    private void initRecyclerView () {
         // Get the widgets reference from XML layout
-        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
 
-        // Define a layout for RecyclerView
-        RecyclerView.LayoutManager layoutManager = new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
+        recyclerView.setVisibility(View.VISIBLE);
+
+        RecyclerView.LayoutManager layoutManager = new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL);
 
         recyclerView.setLayoutManager(layoutManager);
 
         // Initialize a new instance of RecyclerView Adapter instance
-        RecyclerView.Adapter adapter = new ColorAdapter(getApplicationContext());
+        RecyclerView.Adapter adapter = new ColorAdapter(this);
 
         // Set the adapter for RecyclerView
         recyclerView.setAdapter(adapter);
     }
+
+
 }

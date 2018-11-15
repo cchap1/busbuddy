@@ -9,13 +9,13 @@
             android:icon="@drawable/ic_menu_camera"
             android:title="Where is the bus?" />
         <item
-            android:id="@+id/nav_gallery"
+            android:id="@+id/students"
             android:icon="@drawable/ic_menu_gallery"
-            android:title="Gallery" />
+            android:title="Students" />
         <item
-            android:id="@+id/nav_slideshow"
+            android:id="@+id/add_student"
             android:icon="@drawable/ic_menu_slideshow"
-            android:title="Slideshow" />
+            android:title="Add Student" />
         <item
             android:id="@+id/nav_manage"
             android:icon="@drawable/ic_menu_manage"
