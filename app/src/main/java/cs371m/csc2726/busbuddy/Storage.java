@@ -32,12 +32,7 @@ public class Storage {
     }
 
     public void uploadJpg (PhotoObject photoObject, byte[] data) {
-        // XXX Write me
         fileStorage(photoObject).putBytes(data);
     }
 
-    public void displayJpg(PhotoObject photoObject, ImageView imageView) {
-        // XXX Write me
-        //GlideApp.with(context).load(fileStorage(photoObject)).into(imageView);
-    }
 }

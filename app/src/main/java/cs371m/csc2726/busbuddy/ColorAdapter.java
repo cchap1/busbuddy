@@ -3,7 +3,9 @@ package cs371m.csc2726.busbuddy;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.support.v4.graphics.ColorUtils;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -17,20 +19,19 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 
 public class ColorAdapter extends RecyclerView.Adapter<ColorAdapter.ViewHolder> {
-    private String[] kids;
     private Context mContext;
-    private Random random;
     public ArrayList<String> kidNames;
     MainActivity mainActivity;
+    ViewHolder vh;
 
 
     public ColorAdapter(Context context, MainActivity act){
         mainActivity = act;
         mContext = context;
-        random = new Random();
         kidNames = new ArrayList<String>();
         kidNames.add("Johnny Appleseed");
         kidNames.add("Suzie Smith");
@@ -70,7 +71,7 @@ public class ColorAdapter extends RecyclerView.Adapter<ColorAdapter.ViewHolder> 
     public ColorAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
         // Create a new View
         View v = LayoutInflater.from(mContext).inflate(R.layout.row,parent,false);
-        ViewHolder vh = new ViewHolder(v);
+        vh = new ViewHolder(v);
         return vh;
     }
 
@@ -94,26 +95,28 @@ public class ColorAdapter extends RecyclerView.Adapter<ColorAdapter.ViewHolder> 
         String display = kidNames.get(position).toString();
 
 
-        String pic = "student" + position;
-        if (position == 0)
-            holder.imageView.setImageResource(R.drawable.student1);
-        if (position == 1)
-            holder.imageView.setImageResource(R.drawable.student2);
-        if (position == 2)
-            holder.imageView.setImageResource(R.drawable.student3);
-        if (position == 3)
-            holder.imageView.setImageResource(R.drawable.student4);
-        if (position == 4)
-            holder.imageView.setImageResource(R.drawable.student5);
-        if (position == 5)
-            holder.imageView.setImageResource(R.drawable.student6);
-        if (position == 6)
-            holder.imageView.setImageResource(R.drawable.student7);
-        if (position == 7)
-            holder.imageView.setImageResource(R.drawable.student8);
-
-        // XXX Do something with the ViewHolder object
-        //   If the luminance is less than 0.3, use white to write the name, otherwise black
+        BitmapDrawable photo = (BitmapDrawable) holder.imageView.getDrawable();
+        Bitmap photoBits = photo.getBitmap();
+        BitmapDrawable original = (BitmapDrawable) mainActivity.getDrawable(R.drawable.profile);
+        Bitmap originalBits = original.getBitmap();
+        if (photoBits == originalBits) {
+            if (position == 0)
+                holder.imageView.setImageResource(R.drawable.student1);
+            if (position == 1)
+                holder.imageView.setImageResource(R.drawable.student2);
+            if (position == 2)
+                holder.imageView.setImageResource(R.drawable.student3);
+            if (position == 3)
+                holder.imageView.setImageResource(R.drawable.student4);
+            if (position == 4)
+                holder.imageView.setImageResource(R.drawable.student5);
+            if (position == 5)
+                holder.imageView.setImageResource(R.drawable.student6);
+            if (position == 6)
+                holder.imageView.setImageResource(R.drawable.student7);
+            if (position == 7)
+                holder.imageView.setImageResource(R.drawable.student8);
+        }
         holder.rowText.setText(display);
         holder.rowText.setBackgroundColor(color);
         if (luminance < .3)
@@ -127,19 +130,37 @@ public class ColorAdapter extends RecyclerView.Adapter<ColorAdapter.ViewHolder> 
         return kidNames.size();
     }
 
-    public void removeAll(RecyclerView.LayoutManager layoutManager) {
+    public void removeAll(RecyclerView.LayoutManager layoutManager) throws InterruptedException {
         int count = getItemCount();
+        int removed = 0;
+        Log.d("TAG", "removeAlls: " + count);
         for (int i = 0; i <=  count; i++) {
             View view = layoutManager.findViewByPosition(i);
             Log.d("TAG", "removeAll: "+ view);
-            if (view == null)
-                return;
-            TextView rowText = (TextView) view.findViewById(R.id.kidText);
-            ColorDrawable background = (ColorDrawable) rowText.getBackground();
-            if (background.getColor() == Color.RED) {
-                kidNames.remove(i);
-                notifyItemRemoved(i);
-                notifyItemRangeChanged(i, kidNames.size());
+            if (view != null) {
+
+                TextView rowText = (TextView) view.findViewById(R.id.kidText);
+                ColorDrawable background = (ColorDrawable) rowText.getBackground();
+                if (background.getColor() == Color.RED) {
+                    /*
+                    for (int j = i + 1; j <= count; j++) {
+                        View viewer = layoutManager.findViewByPosition(j);
+                        View old = layoutManager.findViewByPosition(i);
+                        Log.d("TAG", "removeAll: " + viewer);
+                        if (viewer != null) {
+                            ImageView image = (ImageView) viewer.findViewById(R.id.kidPic);
+                            Drawable draw = image.getDrawable();
+                            ImageView oldimage = (ImageView) old.findViewById(R.id.kidPic);
+                            //vh.imageView.setImageDrawable(draw);
+                        }
+                    }*/
+
+                    kidNames.remove(i-removed);
+                    notifyItemRemoved(i-removed);
+                    notifyItemRangeChanged(i-removed, kidNames.size());
+                    removed++;
+
+                }
             }
         }
     }

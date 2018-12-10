@@ -148,6 +148,7 @@ public class MainActivity extends AppCompatActivity
                 != PackageManager.PERMISSION_GRANTED) {
             requestLocation();
         }
+
         else {
             if (driver) {
                 locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
@@ -163,7 +164,11 @@ public class MainActivity extends AppCompatActivity
                     return;
                 ColorAdapter ca = (ColorAdapter) recyclerView.getAdapter();
                 Log.d("TAG", "onClick: "+layoutManager);
-                ca.removeAll(layoutManager);
+                try {
+                    ca.removeAll(layoutManager);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
 
             }
         });
@@ -246,7 +251,6 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.bus_location) {
-            if (driver) {
                 if (ActivityCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION)
                         != PackageManager.PERMISSION_GRANTED) {
                     Log.d("Location here:", "failed");
@@ -275,8 +279,7 @@ public class MainActivity extends AppCompatActivity
 
                             }
                         });
-            }
-            else {
+            /*else {
                 if (lat == 0.0 || lon == 0.0) {
                     Toast.makeText(this,
                             "Bus drivers location has not been updated", Toast.LENGTH_SHORT).show();
@@ -292,7 +295,7 @@ public class MainActivity extends AppCompatActivity
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-            }
+            }*/
         } else if (id == R.id.students) {
             goToMain();
         } else if (id == R.id.add_student) {
@@ -346,7 +349,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // XXX write this entire function
         if (resultCode == RESULT_CANCELED)
             return;
         Bundle extras = data.getExtras();
@@ -428,7 +430,6 @@ public class MainActivity extends AppCompatActivity
         String uid = currentUser.getUid();
         if (uid.equals("dDUspoyUzweejSd4UUDhj3xBr8q2")) {
             driver = true;
-            Log.d("TAG", "driver changed: true ");
         }
         else {
             driver = false;

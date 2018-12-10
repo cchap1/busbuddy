@@ -102,9 +102,6 @@ public class MapHolder implements OnMapReadyCallback {
             {
                 Geocoder geo = new Geocoder(context);
 
-                /* XXX write me
-                    Use the Geocoder object for fast(er) geocoding first
-                 */
                 //new NameToLatLngTask(context, new NameToLatLngTask.OnLatLngCallback(), cb);
                 try {
                     List<Address> e;
@@ -120,72 +117,6 @@ public class MapHolder implements OnMapReadyCallback {
                 }
             }
 
-            /* go remote as a last resort*/
-            /*url = geocoderURLBuilder(name);
-            if (url == null) {
-                cancel(true);
-                return null;
-            }
-
-            try {
-                String result = null;
-                HttpURLConnection urlConn = (HttpURLConnection) url.openConnection();
-                urlConn.connect();
-
-                if( urlConn.getContentType().startsWith("application/json") )
-                    result = fetchJson(urlConn);
-                else
-                    Log.e("URLfetch", "Result has bad type (not json)");
-
-                if (result != null)
-                        pos = latLngFromJsonString(result);
-            } catch (IOException e) {
-                Log.e("URLfetch", e.toString());
-                e.printStackTrace();
-            } catch (JSONException e) {
-                Log.e("JsonBuild", "JSON malformed");
-            }
-
-            if (pos == null) {
-                cancel(false);
-            }
-            return pos;
-        }
-
-        protected String readStreamToString(InputStream in) throws IOException{
-            int numRead;
-            final int bufferSize = 1024;
-            byte[] buffer = new byte[bufferSize];
-            ByteArrayOutputStream outString = new ByteArrayOutputStream();
-
-            while ((numRead = in.read(buffer)) != -1) {
-                outString.write(buffer, 0, numRead);
-                if (isCancelled()) {
-                    return null;
-                }
-            }
-            return new String(outString.toByteArray(), "UTF-8");
-        }
-
-        protected String fetchJson(HttpURLConnection conn) {
-            InputStream in = null;
-            String result = null;
-            try {
-                in = new BufferedInputStream(conn.getInputStream());
-                result = readStreamToString(in);
-                Log.d("fetchJson", "json " + result);
-            } catch( IOException e ) {
-                e.printStackTrace();
-            }
-
-            if (in != null) {
-                try {
-                    in.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            return result;*/
         }
 
         @Override
@@ -225,8 +156,6 @@ public class MapHolder implements OnMapReadyCallback {
     public void showAddress(final String address) {
         if (warnIfNotReady())
             return;
-        /* XXX write me */
-        //call callback
         new NameToLatLngTask(context, address, new NameToLatLngTask.OnLatLngCallback() {
             @Override
             public void onLatLng(LatLng a) {
