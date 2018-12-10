@@ -19,6 +19,7 @@ import javax.xml.datatype.Duration;
 
 public class AddKid extends AppCompatActivity {
     private static final int CAMERA_REQUEST = 1888;
+    private Bitmap photoB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +66,7 @@ public class AddKid extends AppCompatActivity {
         }
         Intent goBack = new Intent(getApplicationContext(), MainActivity.class);
         goBack.putExtra("kidName", name);
-        goBack.putExtra("bitmap", photoBits);
+        goBack.putExtra("bitmap", photoB);
         setResult(RESULT_OK, goBack);
         finish();
     }
@@ -77,8 +78,8 @@ public class AddKid extends AppCompatActivity {
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
-            Bitmap photo = (Bitmap) data.getExtras().get("data");
-            update_image(photo);
+            photoB = (Bitmap) data.getExtras().get("data");
+            update_image(photoB);
         }
     }
 

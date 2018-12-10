@@ -55,7 +55,8 @@ import java.util.UUID;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener,
+        SecondHandler.IUpdate{
 
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
@@ -68,6 +69,9 @@ public class MainActivity extends AppCompatActivity
     private SupportMapFragment mapFragment;
     private MapHolder mapHolder;
     private RecyclerView recyclerView;
+    public Boolean driver;
+    public double lat;
+    public double lon;
 
 
     private FusedLocationProviderClient client;
@@ -81,6 +85,7 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         active = true;
+        driver = false;
 
         /*ListView kidList = (ListView) findViewById(R.id.theListView);
         String[] kidNames = getResources().getStringArray(R.array.kids);
@@ -94,8 +99,25 @@ public class MainActivity extends AppCompatActivity
         firestore.init(auth);
         Storage.getInstance().init(getApplicationContext());
 
+        new SecondHandler(this);
+
         if (currentUser == null)
             loginFunc();
+        else {
+            mAuth = FirebaseAuth.getInstance();
+            currentUser = mAuth.getCurrentUser();
+            String uid = currentUser.getUid();
+
+            Log.d("TAG", "onLocationChanged: true " + uid);
+
+
+            if (uid.equals("dDUspoyUzweejSd4UUDhj3xBr8q2")) {
+                driver = true;
+                Log.d("TAG", "driver changed: true ");
+            } else {
+                driver = false;
+            }
+        }
 
         initRecyclerView();
 
@@ -127,14 +149,18 @@ public class MainActivity extends AppCompatActivity
             requestLocation();
         }
         else {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-                    60, 0, locationListener);
+            if (driver) {
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                        60, 0, locationListener);
+            }
         }
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (!driver)
+                    return;
                 ColorAdapter ca = (ColorAdapter) recyclerView.getAdapter();
                 Log.d("TAG", "onClick: "+layoutManager);
                 ca.removeAll(layoutManager);
@@ -174,6 +200,7 @@ public class MainActivity extends AppCompatActivity
                         .setAvailableProviders(providers)
                         .build(),
                 result);
+
 
         updateUser();
     }
@@ -219,49 +246,75 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.bus_location) {
-            if (ActivityCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-                Log.d("Location here:", "failed");
-                return false;
-            }
-            client.getLastLocation().addOnSuccessListener(MainActivity.this,
-                    new OnSuccessListener<Location>() {
-                @Override
-                public void onSuccess(Location location) {
-                    if (location != null) {
-                        double lat = location.getLatitude();
-                        double lon = location.getLongitude();
-                        LatLng pos = new LatLng(lat,lon);
-                        Geocoder geocoder;
-                        List<Address> addresses;
-                        geocoder = new Geocoder(MainActivity.this, Locale.getDefault());
-                        try {
-                            addresses = geocoder.getFromLocation(lat, lon, 1);
-                            String address = addresses.get(0).getAddressLine(0);
-                            toMapFragment(address);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-
+            if (driver) {
+                if (ActivityCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    Log.d("Location here:", "failed");
+                    return false;
                 }
-            });
+
+                client.getLastLocation().addOnSuccessListener(MainActivity.this,
+                        new OnSuccessListener<Location>() {
+                            @Override
+                            public void onSuccess(Location location) {
+                                if (location != null) {
+                                    lat = location.getLatitude();
+                                    lon = location.getLongitude();
+                                    LatLng pos = new LatLng(lat, lon);
+                                    Geocoder geocoder;
+                                    List<Address> addresses;
+                                    geocoder = new Geocoder(MainActivity.this, Locale.getDefault());
+                                    try {
+                                        addresses = geocoder.getFromLocation(lat, lon, 1);
+                                        String address = addresses.get(0).getAddressLine(0);
+                                        toMapFragment(address);
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+
+                            }
+                        });
+            }
+            else {
+                if (lat == 0.0 || lon == 0.0) {
+                    Toast.makeText(this,
+                            "Bus drivers location has not been updated", Toast.LENGTH_SHORT).show();
+                    return false;
+                }
+                Geocoder geocoder;
+                List<Address> addresses;
+                geocoder = new Geocoder(MainActivity.this, Locale.getDefault());
+                try {
+                    addresses = geocoder.getFromLocation(lat, lon, 1);
+                    String address = addresses.get(0).getAddressLine(0);
+                    toMapFragment(address);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         } else if (id == R.id.students) {
             goToMain();
         } else if (id == R.id.add_student) {
+            if (!driver) {
+                Toast.makeText(this, "You don't have the credentials", Toast.LENGTH_SHORT).show();
+                return false;
+            }
             addStudentHandler();
 
         } else if (id == R.id.reset) {
+            if (!driver) {
+                Toast.makeText(this, "You don't have the credentials", Toast.LENGTH_SHORT).show();
+                return false;
+            }
             Intent i = getBaseContext().getPackageManager().
                     getLaunchIntentForPackage(getBaseContext().getPackageName());
             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(i);
 
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
+        } else if (id == R.id.exit) {
+            finish();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -307,6 +360,8 @@ public class MainActivity extends AppCompatActivity
             byte[] imageBytes = convertBitmapToBytes(bits, 100);
             Storage store = Storage.getInstance();
             store.uploadJpg(p, imageBytes);
+            ColorAdapter ca = (ColorAdapter) recyclerView.getAdapter();
+            ca.add(name, layoutManager, ca, bits);
         }
     }
 
@@ -320,7 +375,7 @@ public class MainActivity extends AppCompatActivity
                 StaggeredGridLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(layoutManager);
         // Initialize a new instance of RecyclerView Adapter instance
-        adapter = new ColorAdapter(this);
+        adapter = new ColorAdapter(this, this);
         // Set the adapter for RecyclerView
         recyclerView.setAdapter(adapter);
         Log.d("TAG", "initonClick: "+layoutManager);
@@ -363,5 +418,20 @@ public class MainActivity extends AppCompatActivity
             }
         }
 
+    }
+
+    public void checkDriver() {
+        mAuth = FirebaseAuth.getInstance();
+        currentUser = mAuth.getCurrentUser();
+        if (currentUser == null)
+            return;
+        String uid = currentUser.getUid();
+        if (uid.equals("dDUspoyUzweejSd4UUDhj3xBr8q2")) {
+            driver = true;
+            Log.d("TAG", "driver changed: true ");
+        }
+        else {
+            driver = false;
+        }
     }
 }

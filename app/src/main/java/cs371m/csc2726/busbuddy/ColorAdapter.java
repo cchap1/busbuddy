@@ -1,6 +1,7 @@
 package cs371m.csc2726.busbuddy;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v4.graphics.ColorUtils;
@@ -18,14 +19,16 @@ import java.util.List;
 import java.util.Random;
 
 
-public class ColorAdapter extends RecyclerView.Adapter<ColorAdapter.ViewHolder>{
+public class ColorAdapter extends RecyclerView.Adapter<ColorAdapter.ViewHolder> {
     private String[] kids;
     private Context mContext;
     private Random random;
     public ArrayList<String> kidNames;
+    MainActivity mainActivity;
 
 
-    public ColorAdapter(Context context){
+    public ColorAdapter(Context context, MainActivity act){
+        mainActivity = act;
         mContext = context;
         random = new Random();
         kidNames = new ArrayList<String>();
@@ -51,6 +54,8 @@ public class ColorAdapter extends RecyclerView.Adapter<ColorAdapter.ViewHolder>{
             rowText.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    if (!mainActivity.driver)
+                        return;
                     ColorDrawable background = (ColorDrawable) rowText.getBackground();
                     if (background.getColor() == Color.GREEN)
                         rowText.setBackgroundColor(Color.RED);
@@ -127,6 +132,8 @@ public class ColorAdapter extends RecyclerView.Adapter<ColorAdapter.ViewHolder>{
         for (int i = 0; i <=  count; i++) {
             View view = layoutManager.findViewByPosition(i);
             Log.d("TAG", "removeAll: "+ view);
+            if (view == null)
+                return;
             TextView rowText = (TextView) view.findViewById(R.id.kidText);
             ColorDrawable background = (ColorDrawable) rowText.getBackground();
             if (background.getColor() == Color.RED) {
@@ -135,6 +142,21 @@ public class ColorAdapter extends RecyclerView.Adapter<ColorAdapter.ViewHolder>{
                 notifyItemRangeChanged(i, kidNames.size());
             }
         }
+    }
+
+    public void add(String name, RecyclerView.LayoutManager layoutManager,
+                    ColorAdapter adapter, Bitmap bm){
+        kidNames.add(name);
+        int position = kidNames.indexOf(name);
+        adapter.notifyItemInserted(kidNames.size() - 1);
+        Log.d("TAG", "removeAll: "+ position);
+        View view = layoutManager.findViewByPosition(position);
+        if (view == null)
+            return;
+        Log.d("TAG", "remoaaaaaveAll: "+ view);
+        ImageView pic = view.findViewById(R.id.kidPic);
+        pic.setImageBitmap(bm);
+        notifyDataSetChanged();
     }
 
 }
